@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="FindTheSong/FindTheSong.csproj" />
+  <Project Path="FindTheSong.Tests/FindTheSong.Tests.csproj" />
+</Solution>
