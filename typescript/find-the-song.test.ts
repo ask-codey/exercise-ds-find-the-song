@@ -68,3 +68,18 @@ test("a thousand songs take at most ten binary looks", () => {
     assert.ok(binaryLooks(big, song) <= 10, "Not yet: no song in 1,000 should take more than 10 binary looks.");
   });
 });
+
+test("ten thousand searches in a million songs take under a second", () => {
+  const catalog: string[] = [];
+  for (let i = 1; i <= 1000000; i++) {
+    catalog.push(`Song ${String(i).padStart(7, "0")}`);
+  }
+  assert.ok(binaryLooks(catalog, "Song 1000000") <= 20, "Not yet: the last of a million songs should take at most 20 binary looks.");
+  assert.ok(binaryLooks(catalog, "Song 0000000") <= 20, "Not yet: a song missing from a million songs should take at most 20 binary looks.");
+  const started = performance.now();
+  for (let k = 1; k <= 10000; k++) {
+    const title = `Song ${String(k * 100).padStart(7, "0")}`;
+    assert.equal(binarySearch(catalog, title), k * 100 - 1, `Not yet: ${title} is at position ${k * 100 - 1} of the million.`);
+    assert.ok(performance.now() - started < 1000, `Not yet: the ticket allows 1 second for 10,000 searches in a million songs, and ${k} searches took longer. A search that halves what's left reads about 20 titles a search.`);
+  }
+});

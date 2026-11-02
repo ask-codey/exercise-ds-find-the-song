@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FindTheSong;
 
 namespace FindTheSong.Tests;
@@ -89,6 +90,25 @@ public class SearchTests
         {
             Assert.AreEqual(position, Search.BinarySearch(big, big[position]), "Not yet: " + big[position] + " is at position " + position + ".");
             Assert.IsTrue(Search.BinaryLooks(big, big[position]) <= 10, "Not yet: no song in 1,000 should take more than 10 binary looks.");
+        }
+    }
+
+    [TestMethod]
+    public void TenThousandSearchesInAMillionSongsTakeUnderASecond()
+    {
+        List<string> catalog = new List<string>();
+        for (int i = 1; i <= 1000000; i++)
+        {
+            catalog.Add("Song " + i.ToString("D7"));
+        }
+        Assert.IsTrue(Search.BinaryLooks(catalog, "Song 1000000") <= 20, "Not yet: the last of a million songs should take at most 20 binary looks.");
+        Assert.IsTrue(Search.BinaryLooks(catalog, "Song 0000000") <= 20, "Not yet: a song missing from a million songs should take at most 20 binary looks.");
+        Stopwatch watch = Stopwatch.StartNew();
+        for (int k = 1; k <= 10000; k++)
+        {
+            string title = "Song " + (k * 100).ToString("D7");
+            Assert.AreEqual(k * 100 - 1, Search.BinarySearch(catalog, title), "Not yet: " + title + " is at position " + (k * 100 - 1) + " of the million.");
+            Assert.IsTrue(watch.Elapsed.TotalSeconds < 1, "Not yet: the ticket allows 1 second for 10,000 searches in a million songs, and " + k + " searches took longer. A search that halves what's left reads about 20 titles a search.");
         }
     }
 }

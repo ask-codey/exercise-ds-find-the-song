@@ -1,5 +1,7 @@
 # The tests for your four functions. You don't need to change this file.
 # Each message says what was expected, so a failing test tells you what to look at.
+import time
+
 from find_the_song import binary_looks, binary_search, linear_looks, linear_search
 
 UNSORTED = ["Midnight Bus", "Lemon Skies", "Slow Rain", "Paper Boats", "Neon Garden", "Quiet Harbor", "Sunday Static", "Golden Hour"]
@@ -61,3 +63,15 @@ def test_a_thousand_songs_take_at_most_ten_binary_looks():
     for position, song in enumerate(big):
         assert binary_search(big, song) == position, f"Not yet: {song} is at position {position}."
         assert binary_looks(big, song) <= 10, "Not yet: no song in 1,000 should take more than 10 binary looks."
+
+
+def test_ten_thousand_searches_in_a_million_songs_take_under_a_second():
+    catalog = [f"Song {i:07d}" for i in range(1, 1000001)]
+    assert binary_looks(catalog, "Song 1000000") <= 20, "Not yet: the last of a million songs should take at most 20 binary looks."
+    assert binary_looks(catalog, "Song 0000000") <= 20, "Not yet: a song missing from a million songs should take at most 20 binary looks."
+    started = time.perf_counter()
+    for k in range(1, 10001):
+        title = f"Song {k * 100:07d}"
+        assert binary_search(catalog, title) == k * 100 - 1, f"Not yet: {title} is at position {k * 100 - 1} of the million."
+        assert time.perf_counter() - started < 1, \
+            f"Not yet: the ticket allows 1 second for 10,000 searches in a million songs, and {k} searches took longer. A search that halves what's left reads about 20 titles a search."

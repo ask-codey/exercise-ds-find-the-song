@@ -80,4 +80,20 @@ class SearchTest {
             assertTrue(Search.binaryLooks(big, big.get(position)) <= 10, "Not yet: no song in 1,000 should take more than 10 binary looks.");
         }
     }
+
+    @Test
+    void tenThousandSearchesInAMillionSongsTakeUnderASecond() {
+        List<String> catalog = new ArrayList<>();
+        for (int i = 1; i <= 1000000; i++) {
+            catalog.add(String.format("Song %07d", i));
+        }
+        assertTrue(Search.binaryLooks(catalog, "Song 1000000") <= 20, "Not yet: the last of a million songs should take at most 20 binary looks.");
+        assertTrue(Search.binaryLooks(catalog, "Song 0000000") <= 20, "Not yet: a song missing from a million songs should take at most 20 binary looks.");
+        long started = System.nanoTime();
+        for (int k = 1; k <= 10000; k++) {
+            String title = String.format("Song %07d", k * 100);
+            assertEquals(k * 100 - 1, Search.binarySearch(catalog, title), "Not yet: " + title + " is at position " + (k * 100 - 1) + " of the million.");
+            assertTrue(System.nanoTime() - started < 1_000_000_000L, "Not yet: the ticket allows 1 second for 10,000 searches in a million songs, and " + k + " searches took longer. A search that halves what's left reads about 20 titles a search.");
+        }
+    }
 }
